@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>BNN NETWORK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C31F26;
+    --red-deep:#8F151B;
+    --navy:#132B4C;
+    --navy-deep:#0B1D33;
+    --white:#FFFFFF;
+    --off:#F5F5F3;
+    --ink:#1B1B1B;
+    --muted:#6B7280;
+    --card-border:#E7E4DE;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--navy-deep);
+    font-family:'Noto Sans Sinhala','Inter',sans-serif;
+    color:var(--ink);
+    min-height:100%;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .top-bar{
+    height:6px;
+    background:linear-gradient(90deg, var(--red) 0%, var(--white) 50%, var(--navy) 100%);
+  }
+  .hero{
+    background:linear-gradient(180deg,var(--navy) 0%,var(--navy-deep) 100%);
+    padding:32px 20px 56px;
+    text-align:center;
+    color:var(--white);
+  }
+  .logo-wrap{
+    width:150px;
+    height:150px;
+    margin:0 auto 18px;
+    background:var(--white);
+    border-radius:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    overflow:hidden;
+  }
+  .logo-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .hero h1{
+    font-family:'Fraunces',serif;
+    font-weight:800;
+    font-size:clamp(26px,6vw,38px);
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+    color:var(--white);
+  }
+  .hero .tag{
+    display:inline-block;
+    background:var(--red);
+    color:var(--white);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    padding:5px 14px;
+    border-radius:999px;
+    margin-bottom:14px;
+  }
+  .hero p{
+    margin:0 auto;
+    max-width:420px;
+    color:#C9D2E0;
+    font-size:15px;
+    line-height:1.6;
+  }
+  .search-wrap{
+    max-width:480px;
+    margin:26px auto 0;
+    padding:0 8px;
+  }
+  #searchInput{
+    width:100%;
+    padding:14px 18px;
+    border-radius:999px;
+    border:2px solid var(--red);
+    font-size:16px;
+    font-family:inherit;
+    background:var(--white);
+    color:var(--ink);
+    outline:none;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  #searchInput:focus{
+    box-shadow:0 0 0 3px rgba(195,31,38,0.35), 0 8px 24px rgba(0,0,0,0.25);
+  }
+  main{
+    max-width:640px;
+    margin:-30px auto 0;
+    padding:0 16px 60px;
+  }
+  .status{
+    background:var(--white);
+    border-radius:16px;
+    padding:18px 20px;
+    color:var(--muted);
+    text-align:center;
+    font-size:14px;
+  }
+  .card{
+    background:var(--white);
+    border:1px solid var(--card-border);
+    border-left:5px solid var(--red);
+    border-radius:14px;
+    padding:18px 20px;
+    margin-bottom:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.06);
+  }
+  .card .name{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--navy);
+    margin:0 0 6px;
+  }
+  .card .msg{
+    font-size:15px;
+    line-height:1.6;
+    color:var(--ink);
+    margin:0 0 12px;
+    word-break:break-word;
+  }
+  .card a.go, .modal-box a.go{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--red);
+    color:var(--white);
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+    padding:9px 16px;
+    border-radius:999px;
+  }
+  .card a.go:hover{ background:var(--red-deep); }
+  .link-title{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13.5px;
+    color:var(--navy);
+    background:var(--off);
+    border:1px dashed var(--card-border);
+    padding:8px 12px;
+    border-radius:10px;
+    margin:0 0 8px;
+    line-height:1.5;
+    word-break:break-word;
+    width:100%;
+  }
+  .link-block{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:0;
+    width:100%;
+    margin-bottom:10px;
+  }
+  .link-block:last-child{ margin-bottom:0; }
+  .link-block{
+    margin-bottom:12px;
+  }
+  .link-block:last-child{
+    margin-bottom:0;
+  }
+  .link-title b{ color:var(--red-deep); }
+  .empty{
+    text-align:center;
+    color:#C9D2E0;
+    padding:40px 20px;
+    font-size:15px;
+  }
+  .card .actions, .modal-box .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .card a.desc-btn, .card button.desc-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--off);
+    color:var(--navy);
+    border:1px solid var(--card-border);
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+    padding:9px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .card button.desc-btn:hover{ background:#ECE9E1; }
+
+  /* Modal */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(11,29,51,0.6);
+    z-index:1000;
+    padding:20px 14px;
+    padding-top:calc(20px + env(safe-area-inset-top,0px));
+    padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+    overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; align-items:flex-start; justify-content:center; }
+  .modal-box{
+    background:var(--white);
+    border-radius:18px;
+    max-width:560px;
+    width:100%;
+    padding:22px 22px 24px;
+    position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  }
+  .modal-box .modal-name{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:19px;
+    color:var(--navy);
+    margin:0 0 12px;
+    padding-right:30px;
+  }
+  .modal-box .modal-msg{
+    font-size:15px;
+    line-height:1.7;
+    color:var(--ink);
+    white-space:pre-wrap;
+    word-break:break-word;
+    margin:0 0 16px;
+    max-height:60vh;
+    overflow-y:auto;
+  }
+  .modal-close{
+    position:absolute;
+    top:16px;
+    right:16px;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:none;
+    background:var(--off);
+    color:var(--navy);
+    font-size:18px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  footer{
+    text-align:center;
+    padding:20px 16px 30px;
+    color:#8A93A6;
+    font-size:12.5px;
+  }
+
+  /* Language switcher */
+  .lang-btn{
+    position:fixed;
+    top:calc(14px + env(safe-area-inset-top,0px));
+    right:14px;
+    z-index:900;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    background:var(--white);
+    color:var(--navy);
+    font-size:20px;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .lang-btn:active{ transform:scale(0.95); }
+  .lang-search-input{
+    width:100%;
+    padding:11px 16px;
+    border-radius:999px;
+    border:1px solid var(--card-border);
+    font-size:15px;
+    font-family:inherit;
+    margin:0 0 14px;
+    outline:none;
+    background:var(--off);
+    color:var(--ink);
+  }
+  .lang-search-input:focus{ border-color:var(--red); }
+  .lang-list{
+    max-height:52vh;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .lang-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid var(--card-border);
+    background:var(--off);
+    cursor:pointer;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--ink);
+    text-align:left;
+    width:100%;
+  }
+  .lang-item:hover{ background:#ECE9E1; }
+  .lang-item.active{ border-color:var(--red); background:#FBEAEA; }
+  .lang-item .native{ color:var(--muted); font-size:13px; }
+  .lang-empty{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    padding:20px 10px;
+  }
+  .translating-box{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:var(--white);
+    border-radius:16px;
+    padding:22px 20px;
+    color:var(--navy);
+    text-align:center;
+    font-size:14.5px;
+    font-weight:600;
+  }
+  .spinner{
+    width:18px;height:18px;
+    border-radius:50%;
+    border:3px solid var(--card-border);
+    border-top-color:var(--red);
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+  <button class="lang-btn" id="langButton" aria-label="Change language">🌐</button>
+
+  <div class="top-bar"></div>
+
+  <div class="hero">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="BNN Network Logo" />
+    </div>
+    <span class="tag" id="heroTag">BNN NETWORK</span>
+    <h1 id="heroH1">මැසේජ් සොයන්න</h1>
+    <p id="heroSub">නමක් type කරලා, ඒ නමට අදාළ මැසේජ් සහ link එක සොයාගන්න.</p>
+    <div class="search-wrap">
+      <input id="searchInput" type="text" placeholder="නම type කරන්න... (උදා: Kasun)" autocomplete="off" />
+    </div>
+  </div>
+
+  <main>
+    <div id="content">
+      <div class="status">Loading...</div>
+    </div>
+  </main>
+
+  <footer id="footerText">BNN NETWORK &copy; 2026</footer>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose" aria-label="close">&times;</button>
+      <p class="modal-name" id="modalName"></p>
+      <p class="modal-msg" id="modalMsg"></p>
+      <div class="actions" id="modalActions"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="langModalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="langModalClose" aria-label="close">&times;</button>
+      <p class="modal-name" id="langModalTitle">Select language</p>
+      <input type="text" id="langSearchInput" class="lang-search-input" placeholder="Search language..." autocomplete="off" />
+      <div class="lang-list" id="langList"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------------------------------------------------------
+    // 1) මෙතන ඔයාගේ GitHub repo එකේ messages.json ෆයිල් එකේ RAW LINK එක දාන්න.
+    //    උදාහරණය: https://raw.githubusercontent.com/USERNAME/REPO/main/messages.json
+    // ---------------------------------------------------------------
+    const GITHUB_RAW_URL = "https://raw.githubusercontent.com/USERNAME/REPO/main/messages.json";
+
+    // messages.json එකේ format එක මෙන්න මේ විදිහට තියෙන්න ඕන:
+    // [
+    //   { "name": "Kasun", "message": "අපේ WhatsApp group එකට එන්න!", "link": "https://chat.whatsapp.com/xxxxxxx" },
+    //   { "name": "Nimali", "message": "Website එක බලන්න", "link": "https://example.com" }
+    // ]
+
+    let allMessages = [];
+    const contentEl = document.getElementById('content');
+    const searchEl = document.getElementById('searchInput');
+
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    /* =========================================================
+       LANGUAGE SWITCHER + AUTO TRANSLATION
+       - UI text (headings/buttons) has built-in translations for
+         Sinhala + English, and auto-translates via a free API
+         (MyMemory) for any other language the user searches for.
+       - Message content (name/message/link titles) is also
+         auto-translated the same way, and cached in-memory so
+         switching back and forth doesn't re-call the API.
+       - Translation quality depends on the free API; for very
+         niche languages results can be rough.
+       ========================================================= */
+
+    const LANGUAGES = [
+      {code:'si', name:'Sinhala', native:'සිංහල (Original)'},
+      {code:'en', name:'English', native:'English'},
+      {code:'ta', name:'Tamil', native:'தமிழ்'},
+      {code:'hi', name:'Hindi', native:'हिन्दी'},
+      {code:'ar', name:'Arabic', native:'العربية'},
+      {code:'fr', name:'French', native:'Français'},
+      {code:'de', name:'German', native:'Deutsch'},
+      {code:'es', name:'Spanish', native:'Español'},
+      {code:'pt', name:'Portuguese', native:'Português'},
+      {code:'it', name:'Italian', native:'Italiano'},
+      {code:'zh', name:'Chinese', native:'中文'},
+      {code:'ja', name:'Japanese', native:'日本語'},
+      {code:'ko', name:'Korean', native:'한국어'},
+      {code:'ru', name:'Russian', native:'Русский'},
+      {code:'tr', name:'Turkish', native:'Türkçe'},
+      {code:'id', name:'Indonesian', native:'Bahasa Indonesia'},
+      {code:'ms', name:'Malay', native:'Bahasa Melayu'},
+      {code:'th', name:'Thai', native:'ไทย'},
+      {code:'vi', name:'Vietnamese', native:'Tiếng Việt'},
+      {code:'bn', name:'Bengali', native:'বাংলা'},
+      {code:'ur', name:'Urdu', native:'اردو'},
+      {code:'ne', name:'Nepali', native:'नेपाली'},
+      {code:'pa', name:'Punjabi', native:'ਪੰਜਾਬੀ'},
+      {code:'my', name:'Burmese', native:'မြန်မာ'},
+      {code:'km', name:'Khmer', native:'ខ្មែរ'},
+      {code:'fil', name:'Filipino', native:'Filipino'},
+      {code:'sw', name:'Swahili', native:'Kiswahili'},
+      {code:'nl', name:'Dutch', native:'Nederlands'},
+      {code:'pl', name:'Polish', native:'Polski'},
+      {code:'uk', name:'Ukrainian', native:'Українська'},
+      {code:'el', name:'Greek', native:'Ελληνικά'},
+      {code:'he', name:'Hebrew', native:'עברית'},
+      {code:'fa', name:'Persian', native:'فارسی'},
+      {code:'sv', name:'Swedish', native:'Svenska'},
+      {code:'no', name:'Norwegian', native:'Norsk'},
+      {code:'fi', name:'Finnish', native:'Suomi'},
+      {code:'da', name:'Danish', native:'Dansk'},
+      {code:'cs', name:'Czech', native:'Čeština'},
+      {code:'ro', name:'Romanian', native:'Română'},
+      {code:'hu', name:'Hungarian', native:'Magyar'},
+      {code:'sr', name:'Serbian', native:'Српски'}
+    ];
+
+    // UI strings, keyed by our own internal names. "si" is the original (as authored).
+    const UI_BUILTIN = {
+      si: {
+        heroTag: "BNN NETWORK",
+        heroH1: "මැසේජ් සොයන්න",
+        heroSub: "නමක් type කරලා, ඒ නමට අදාළ මැසේජ් සහ link එක සොයාගන්න.",
+        searchPlaceholder: "නම type කරන්න... (උදා: Kasun)",
+        loading: "Loading...",
+        empty: "මේ නමට මැසේජ් හමු වුනේ නැහැ.",
+        descBtn: "විස්තරය බලන්න",
+        goBtn: "Link එකට යන්න →",
+        linkGoesTo: "🔗 මේ Link එකෙන් යන්නේ:",
+        errorMsg: "Messages load කරන්න බැරි උනා 😕",
+        errorHint: "GITHUB_RAW_URL එක index.html ෆයිල් එකේ code එකේ correct ද කියලා check කරන්න.",
+        footer: "BNN NETWORK © 2026",
+        langModalTitle: "භාෂාව තෝරන්න",
+        langSearchPlaceholder: "භාෂාව සොයන්න...",
+        translating: "පරිවර්තනය වෙමින්...",
+        langNoResults: "මේ නමට භාෂාවක් හමු වුනේ නැහැ."
+      },
+      en: {
+        heroTag: "BNN NETWORK",
+        heroH1: "Search for messages",
+        heroSub: "Type a name and find the message and link related to that name.",
+        searchPlaceholder: "Type the name... (e.g. Kasun)",
+        loading: "Loading...",
+        empty: "No messages found for this name.",
+        descBtn: "See description",
+        goBtn: "Go to the link →",
+        linkGoesTo: "🔗 This link goes to:",
+        errorMsg: "Couldn't load messages 😕",
+        errorHint: "Check that GITHUB_RAW_URL in index.html is correct.",
+        footer: "BNN NETWORK © 2026",
+        langModalTitle: "Select language",
+        langSearchPlaceholder: "Search language...",
+        translating: "Translating...",
+        langNoResults: "No language found."
+      }
+    };
+
+    let currentLangCode = 'si';
+    let currentUI = UI_BUILTIN.si;
+    let langRequestId = 0; // race-condition guard: only the latest language switch is allowed to update the screen
+    const uiCache = {}; // langCode -> ui strings object (built-in or API-translated)
+    const contentCache = {}; // langCode -> translated allMessages array
+    const translateMemCache = {}; // "lang::hash" -> translated text
+
+    function hashStr(s){
+      let h = 0;
+      for(let i = 0; i < s.length; i++){
+        h = (h * 31 + s.charCodeAt(i)) | 0;
+      }
+      return h.toString(36);
+    }
+
+    async function translateText(text, targetLang, sourceLang){
+      sourceLang = sourceLang || 'si';
+      if(!text || !String(text).trim()) return text;
+      const key = targetLang + '::' + sourceLang + '::' + hashStr(text);
+      if(translateMemCache[key] !== undefined) return translateMemCache[key];
+      try{
+        const url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=" + sourceLang + "|" + targetLang;
+        const res = await fetch(url);
+        const data = await res.json();
+        const translated = (data && data.responseData && data.responseData.translatedText)
+          ? data.responseData.translatedText
+          : text;
+        translateMemCache[key] = translated;
+        return translated;
+      }catch(e){
+        console.error('translate error', e);
+        return text;
+      }
+    }
+
+    // දිග message එකක් API එකේ character limit එකට (~500) වඩා දිග වෙන්න පුළුවන් නිසා,
+    // පේළි අනුව කැබලි වලට කඩලා, එකින් එක translate කරලා, ආයෙත් join කරනවා.
+    function chunkText(text, maxLen){
+      maxLen = maxLen || 450;
+      const lines = String(text).split('\n');
+      const chunks = [];
+      let buffer = '';
+      for(const line of lines){
+        const candidate = buffer ? (buffer + '\n' + line) : line;
+        if(candidate.length > maxLen){
+          if(buffer) chunks.push(buffer);
+          if(line.length > maxLen){
+            let start = 0;
+            while(start < line.length){
+              chunks.push(line.slice(start, start + maxLen));
+              start += maxLen;
+            }
+            buffer = '';
+          } else {
+            buffer = line;
+          }
+        } else {
+          buffer = candidate;
+        }
+      }
+      if(buffer) chunks.push(buffer);
+      return chunks;
+    }
+
+    async function translateLongText(text, targetLang){
+      if(!text) return text;
+      const chunks = chunkText(text, 450);
+      const out = [];
+      for(const c of chunks){
+        out.push(await translateText(c, targetLang));
+      }
+      return out.join('\n');
+    }
+
+    async function getUIStrings(langCode){
+      if(UI_BUILTIN[langCode]) return UI_BUILTIN[langCode];
+      if(uiCache[langCode]) return uiCache[langCode];
+      const base = UI_BUILTIN.si;
+      const result = {};
+      for(const key of Object.keys(base)){
+        if(key === 'heroTag' || key === 'footer'){
+          result[key] = base[key]; // brand name/footer - keep as-is
+          continue;
+        }
+        result[key] = await translateText(base[key], langCode);
+      }
+      uiCache[langCode] = result;
+      return result;
+    }
+
+    function applyUIStrings(ui){
+      document.getElementById('heroTag').textContent = ui.heroTag;
+      document.getElementById('heroH1').textContent = ui.heroH1;
+      document.getElementById('heroSub').textContent = ui.heroSub;
+      searchEl.setAttribute('placeholder', ui.searchPlaceholder);
+      document.getElementById('footerText').innerHTML = escapeHtml(ui.footer);
+      document.getElementById('langModalTitle').textContent = ui.langModalTitle;
+      document.getElementById('langSearchInput').setAttribute('placeholder', ui.langSearchPlaceholder);
+    }
+
+    async function ensureContentTranslated(langCode, myRequestId){
+      if(langCode === 'si') return allMessages; // originally authored language
+      if(contentCache[langCode]) return contentCache[langCode];
+
+      const total = allMessages.length;
+      const out = [];
+      for(let i = 0; i < total; i++){
+        if(myRequestId !== langRequestId) return null; // user switched language again - abandon this stale job
+        showTranslatingProgress(i + 1, total);
+        const item = allMessages[i];
+
+        const tName = await translateText(item.name || "", langCode);
+        const tMessage = await translateLongText(item.message || "", langCode);
+
+        let srcLinks = [];
+        if(Array.isArray(item.links) && item.links.length){
+          srcLinks = item.links;
+        } else if(item.link){
+          srcLinks = [{ url: item.link, title: item.link_title || "" }];
+        }
+        const tLinks = [];
+        for(const l of srcLinks){
+          const tTitle = l && l.title ? await translateText(l.title, langCode) : "";
+          tLinks.push({ url: l ? l.url : "", title: tTitle });
+        }
+
+        out.push({ name: tName, message: tMessage, links: tLinks });
+      }
+      if(myRequestId !== langRequestId) return null; // stale - don't cache/apply half-finished results as final either way
+      contentCache[langCode] = out;
+      return out;
+    }
+
+    function showTranslatingProgress(done, total){
+      contentEl.innerHTML = `
+        <div class="translating-box">
+          <div class="spinner"></div>
+          <span>${escapeHtml(currentUI.translating)} (${done}/${total})</span>
+        </div>`;
+    }
+
+    async function switchLanguage(langCode){
+      closeLangModal();
+      if(langCode === currentLangCode) return;
+      const myRequestId = ++langRequestId; // this call "owns" the screen until a newer one starts
+      currentLangCode = langCode;
+      currentUI = UI_BUILTIN[langCode] || currentUI; // instant fallback so labels don't look stuck mid-switch
+      showTranslatingProgress(0, allMessages.length || 1);
+
+      const ui = await getUIStrings(langCode);
+      if(myRequestId !== langRequestId) return; // a newer switch started while we were awaiting - stop here
+      currentUI = ui;
+      applyUIStrings(ui);
+
+      const translated = await ensureContentTranslated(langCode, myRequestId);
+      if(myRequestId !== langRequestId || translated === null) return; // stale - a newer switch is already in charge
+      filterAndRender(searchEl.value, translated);
+      highlightActiveLangItem();
+    }
+
+    // ---- Language picker modal ----
+    const langButton = document.getElementById('langButton');
+    const langModalOverlay = document.getElementById('langModalOverlay');
+    const langModalClose = document.getElementById('langModalClose');
+    const langSearchInput = document.getElementById('langSearchInput');
+    const langListEl = document.getElementById('langList');
+
+    function renderLangList(filter){
+      const q = (filter || '').trim().toLowerCase();
+      const filtered = !q ? LANGUAGES : LANGUAGES.filter(l =>
+        l.name.toLowerCase().includes(q) ||
+        l.native.toLowerCase().includes(q) ||
+        l.code.toLowerCase().includes(q)
+      );
+      if(!filtered.length){
+        langListEl.innerHTML = `<div class="lang-empty">${escapeHtml(currentUI.langNoResults)}</div>`;
+        return;
+      }
+      langListEl.innerHTML = filtered.map(l => `
+        <button type="button" class="lang-item${l.code === currentLangCode ? ' active' : ''}" data-code="${l.code}">
+          <span>${escapeHtml(l.name)}</span>
+          <span class="native">${escapeHtml(l.native)}</span>
+        </button>
+      `).join("");
+      langListEl.querySelectorAll('.lang-item').forEach(btn => {
+        btn.addEventListener('click', () => switchLanguage(btn.getAttribute('data-code')));
+      });
+    }
+
+    function highlightActiveLangItem(){
+      langListEl.querySelectorAll('.lang-item').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-code') === currentLangCode);
+      });
+    }
+
+    function openLangModal(){
+      langSearchInput.value = '';
+      renderLangList('');
+      langModalOverlay.classList.add('open');
+      setTimeout(() => langSearchInput.focus(), 50);
+    }
+    function closeLangModal(){
+      langModalOverlay.classList.remove('open');
+    }
+    langButton.addEventListener('click', openLangModal);
+    langModalClose.addEventListener('click', closeLangModal);
+    langModalOverlay.addEventListener('click', (e) => {
+      if(e.target.id === 'langModalOverlay') closeLangModal();
+    });
+    langSearchInput.addEventListener('input', (e) => renderLangList(e.target.value));
+
+    /* ========================================================= */
+
+    const PREVIEW_LIMIT = 140; // මේ ගාණට වඩා දිග message නම් preview එකක් + "විස්තරය" බටනක් පෙන්නනවා
+    let currentList = []; // දැනට screen එකේ පෙන්නෙන list එක (search filter වුනාට පස්සෙත් index match වෙන්න)
+
+    function renderMessages(list){
+      currentList = list;
+      if(!list.length){
+        contentEl.innerHTML = `<div class="empty">${escapeHtml(currentUI.empty)}</div>`;
+        return;
+      }
+      contentEl.innerHTML = list.map((item, idx) => {
+        const name = escapeHtml(item.name || "");
+        const rawMessage = item.message || "";
+        const isLong = rawMessage.length > PREVIEW_LIMIT;
+        const previewText = isLong ? rawMessage.slice(0, PREVIEW_LIMIT).trim() + "..." : rawMessage;
+        const message = escapeHtml(previewText);
+        const hasSeparateLink = item.link && String(item.link).trim().length > 0;
+
+        // ---- Multiple links support ----
+        // messages.json එකේ එක message එකකට link ගොඩක් දාන්න ඕන නම්, "links" array එකක් දාන්න:
+        // "links": [
+        //   { "url": "https://t.me/xxxx", "title": "Telegram Channel" },
+        //   { "url": "https://chat.whatsapp.com/xxxx", "title": "WhatsApp Group" }
+        // ]
+        // (පරණ "link" / "link_title" fields එකක් තියෙන items වලටත් වැඩ කරනවා, backward compatible)
+        let linksArray = [];
+        if(Array.isArray(item.links) && item.links.length){
+          linksArray = item.links;
+        } else if(hasSeparateLink){
+          linksArray = [{ url: item.link, title: item.link_title || "" }];
+        }
+
+        const linksHtml = linksArray.map(l => {
+          const url = l && l.url ? String(l.url).trim() : "";
+          if(!url) return "";
+          const title = l && l.title ? String(l.title).trim() : "";
+          const titleHtml = title
+            ? `<p class="link-title">${escapeHtml(currentUI.linkGoesTo)} <b>${escapeHtml(title)}</b></p>`
+            : "";
+          return `<div class="link-block">${titleHtml}<a class="go" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(currentUI.goBtn)}</a></div>`;
+        }).join("");
+        const descButton = isLong
+          ? `<button type="button" class="desc-btn" data-idx="${idx}">${escapeHtml(currentUI.descBtn)}</button>`
+          : "";
+
+        return `
+          <div class="card">
+            <p class="name">${name}</p>
+            <p class="msg">${message}</p>
+            <div class="actions">
+              ${descButton}
+            </div>
+            ${linksHtml}
+          </div>
+        `;
+      }).join("");
+
+      // "විස්තරය බලන්න" බටන් වලට click listener attach කරනවා
+      contentEl.querySelectorAll('.desc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-idx'), 10);
+          openModal(currentList[idx]);
+        });
+      });
+    }
+
+    function openModal(item){
+      if(!item) return;
+      document.getElementById('modalName').textContent = item.name || "";
+      document.getElementById('modalMsg').textContent = item.message || "";
+      const actionsEl = document.getElementById('modalActions');
+
+      const hasSeparateLink = item.link && String(item.link).trim().length > 0;
+      let linksArray = [];
+      if(Array.isArray(item.links) && item.links.length){
+        linksArray = item.links;
+      } else if(hasSeparateLink){
+        linksArray = [{ url: item.link, title: item.link_title || "" }];
+      }
+
+      actionsEl.innerHTML = linksArray.map(l => {
+        const url = l && l.url ? String(l.url).trim() : "";
+        if(!url) return "";
+        const title = l && l.title ? String(l.title).trim() : "";
+        const titleHtml = title
+          ? `<p class="link-title">${escapeHtml(currentUI.linkGoesTo)} <b>${escapeHtml(title)}</b></p>`
+          : "";
+        return `<div class="link-block">${titleHtml}<a class="go" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(currentUI.goBtn)}</a></div>`;
+      }).join("");
+
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function closeModal(){
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', (e) => {
+      if(e.target.id === 'modalOverlay') closeModal();
+    });
+
+    function filterAndRender(query, sourceList){
+      const activeList = sourceList || allMessages;
+      const q = (query || '').trim().toLowerCase();
+      if(!q){
+        renderMessages(activeList);
+        return;
+      }
+      const filtered = activeList.filter(item =>
+        (item.name || "").toLowerCase().includes(q)
+      );
+      renderMessages(filtered);
+    }
+
+    async function loadMessages(){
+      try{
+        const res = await fetch(GITHUB_RAW_URL, { cache: "no-store" });
+        if(!res.ok) throw new Error("Fetch failed: " + res.status);
+        const data = await res.json();
+        allMessages = Array.isArray(data) ? data : [];
+        renderMessages(allMessages);
+      }catch(err){
+        contentEl.innerHTML = `
+          <div class="status">
+            ${escapeHtml(currentUI.errorMsg)}<br/>
+            <span style="font-size:12.5px;">${escapeHtml(currentUI.errorHint)}</span>
+          </div>`;
+        console.error(err);
+      }
+    }
+
+    searchEl.addEventListener('input', (e) => {
+      const activeList = currentLangCode === 'si' ? allMessages : (contentCache[currentLangCode] || allMessages);
+      filterAndRender(e.target.value, activeList);
+    });
+    loadMessages();
+  </script>
+
+</body>
+</html>
